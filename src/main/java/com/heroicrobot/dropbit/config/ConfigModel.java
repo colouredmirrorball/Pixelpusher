@@ -2,39 +2,32 @@ package com.heroicrobot.dropbit.config;
 
 public class ConfigModel {
 
-    int group;
-    int controller;
-    boolean turbo_mode;
-    int turbo_speed;
-    int strips_attached;
-    int pixelsperstrip;
-    boolean blank_on_idle;
-    int[] stripType;
-    boolean[] swap;
-    int[] order;
-    int[] blank;
-    boolean dhcp;
-    int retries;
-    int artnet_universe;
-    int artnet_channel;
-    String ether;
-    String netmask;
-    String gateway;
-
-    String filename;
-
-    private final String[] stripTypes = {"lpd8806", "lpd6803", "ws2801", "ws2811", "tlc59711", "p9813", "sd600a"};
-    private final String[] orders = {"rgb", "rbg", "grb", "gbr", "brg", "bgr"};
-
+    public int group;
+    public int controller;
+    public boolean turbo_mode; // 1 - 24
+    public int turbo_speed;
+    public int strips_attached;
+    public int pixelsperstrip;
+    public boolean blank_on_idle;
+    public StripType[] stripType;
+    public boolean[] swap;
+    public ColorOrder[] order;
+    public int[] blank;
+    public boolean dhcp;
+    public int retries;
+    public int artnet_universe;
+    public int artnet_channel;
+    public String ether;
+    public String netmask;
+    public String gateway;
     ConfigModel() {
-        stripType = new int[8];
+        stripType = new StripType[8];
         swap = new boolean[8];
 
         blank = new int[8];
-        stripType = new int[8];
-        order = new int[8];
+        order = new ColorOrder[8];
 
-        order[0] = order[1] = order[2] = order[3] = order[4] = order[5] = order[6] = order[7] = 1;
+        order[0] = order[1] = order[2] = order[3] = order[4] = order[5] = order[6] = order[7] = ColorOrder.RGB;
 
         dhcp = true;
         retries = 5;
@@ -48,6 +41,7 @@ public class ConfigModel {
         strips_attached = 8;
     }
 
+    @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
         if (group != 0)
@@ -67,13 +61,13 @@ public class ConfigModel {
         if (pixelsperstrip != 240)
             s.append("pixels=").append(pixelsperstrip).append("\n");
         for (int i = 0; i < 8; i++)
-            if (stripType[i] != 0)
-                s.append("strip").append(i + 1).append("=").append(stripTypes[stripType[i]])
+            if (stripType[i] != StripType.LPD8806 && stripType[i] != null)
+                s.append("strip").append(i + 1).append("=").append(stripType[i].getValue())
                         .append("\n");
 
         for (int i = 0; i < 8; i++)
-            if (order[i] != 1)
-                s.append("strip").append(i + 1).append("=").append(orders[order[i]]).append("\n");
+            if (order[i] != ColorOrder.RGB && order[i] != null)
+                s.append("strip").append(i + 1).append("=").append(order[i].getValue()).append("\n");
 
         for (int i = 0; i < 8; i++)
             if (blank[i] != 0)
@@ -111,6 +105,45 @@ public class ConfigModel {
         }
 
         return s.toString();
+    }
+
+    public enum StripType {
+        LPD8806("lpd8806"),
+        LPD6803("lpd6803"),
+        WS2801("ws2801"),
+        WS2811("ws2811"),
+        TLC59711("tlc59711"),
+        P9813("p9813"),
+        SD600A("sd600a");
+
+        private final String value;
+
+        StripType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public enum ColorOrder {
+        RGB("rgb"),
+        RBG("rbg"),
+        GRB("grb"),
+        GBR("gbr"),
+        BRG("brg"),
+        BGR("bgr");
+
+        private final String value;
+
+        ColorOrder(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
 
